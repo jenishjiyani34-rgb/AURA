@@ -223,176 +223,149 @@ export async function generateWordDocument(
   URL.revokeObjectURL(url);
 }
 
-export function generatePDF(
+export async function generatePDF(
   elements: ParsedElement[],
   fontSize: number,
-  _fontFamily: string
-): void {
-  const pdf = new jsPDF({
-    orientation: 'portrait',
-    unit: 'mm',
-    format: 'a4',
-  });
+  fontFamily: string
+): Promise<void> {
+  try {
+    const html2canvas = (await import('html2canvas')).default;
 
-  const pageWidth = pdf.internal.pageSize.getWidth();
-  const pageHeight = pdf.internal.pageSize.getHeight();
-  const margin = 20;
-  const contentWidth = pageWidth - margin * 2;
-  let y = margin;
-  const lineHeight = fontSize * 0.5;
+    const container = document.createElement('div');
+    container.style.position = 'absolute';
+    container.style.left = '-9999px';
+    container.style.top = '0';
+    container.style.width = '794px'; // A4 width at 96 DPI
+    container.style.backgroundColor = '#ffffff';
+    container.style.padding = '48px 64px';
+    container.style.fontFamily = fontFamily || 'Arial, sans-serif';
+    container.style.color = '#1e293b';
+    container.style.boxSizing = 'border-box';
 
-  const addNewPageIfNeeded = (requiredHeight: number) => {
-    if (y + requiredHeight > pageHeight - margin) {
+    const escapeHtml = (unsafe: string) => {
+      return (unsafe || '')
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
+    };
+
+    let htmlContent = '';
+    const baseStyle = `font-family: ${fontFamily}; font-size: ${fontSize}pt; line-height: 1.6;`;
+
+    elements.forEach((element, index) => {
+      switch (element.type) {
+        case 'heading1':
+          htmlContent += `<h1 style="${baseStyle} font-size: ${fontSize + 8}pt; font-weight: 700; margin-bottom: 16px; margin-top: ${index === 0 ? '0' : '24px'}; border-bottom: 1px solid #e2e8f0; padding-bottom: 8px; color: #0f172a;">${escapeHtml(element.content)}</h1>`;
+          break;
+        case 'heading2':
+          htmlContent += `<h2 style="${baseStyle} font-size: ${fontSize + 4}pt; font-weight: 600; margin-bottom: 12px; margin-top: ${index === 0 ? '0' : '20px'}; color: #0f172a;">${escapeHtml(element.content)}</h2>`;
+          break;
+        case 'heading3':
+          htmlContent += `<h3 style="${baseStyle} font-size: ${fontSize + 2}pt; font-weight: 600; margin-bottom: 10px; margin-top: ${index === 0 ? '0' : '16px'}; color: #334155;">${escapeHtml(element.content)}</h3>`;
+          break;
+        case 'paragraph':
+          htmlContent += `<p style="${baseStyle} margin-bottom: 8px; white-space: pre-wrap; word-wrap: break-word;">${escapeHtml(element.content) || '&nbsp;'}</p>`;
+          break;
+        case 'empty-line':
+          htmlContent += `<div style="${baseStyle} height: ${fontSize}pt; min-height: 16px;">&nbsp;</div>`;
+          break;
+        case 'bullet-list':
+          if (element.items) {
+            htmlContent += `<ul style="${baseStyle} margin-left: 24px; margin-bottom: 12px; list-style-type: disc;">`;
+            element.items.forEach(item => {
+              htmlContent += `<li style="margin-bottom: 6px; color: #1e293b; padding-left: 4px;">${escapeHtml(item)}</li>`;
+            });
+            htmlContent += `</ul>`;
+          }
+          break;
+        case 'numbered-list':
+          if (element.items) {
+            htmlContent += `<ol style="${baseStyle} margin-left: 24px; margin-bottom: 12px; list-style-type: decimal;">`;
+            element.items.forEach(item => {
+              htmlContent += `<li style="margin-bottom: 6px; color: #1e293b; padding-left: 4px;">${escapeHtml(item)}</li>`;
+            });
+            htmlContent += `</ol>`;
+          }
+          break;
+        case 'code-block':
+          htmlContent += `<pre style="font-family: 'Fira Code', 'Courier New', monospace; font-size: ${fontSize - 1}pt; background-color: #f8fafc; border: 1px solid #e2e8f0; border-radius: 6px; padding: 16px; margin-bottom: 12px; overflow-x: auto; white-space: pre-wrap; word-wrap: break-word; color: #334155;"><code>${escapeHtml(element.content)}</code></pre>`;
+          break;
+        case 'blockquote':
+          htmlContent += `<blockquote style="${baseStyle} border-left: 4px solid #94a3b8; margin-left: 0; margin-bottom: 12px; background-color: #f8fafc; padding: 12px 16px; border-radius: 0 6px 6px 0; font-style: italic; color: #475569;">${escapeHtml(element.content)}</blockquote>`;
+          break;
+        case 'table':
+          if (element.rows && element.rows.length > 0) {
+            htmlContent += `<div style="margin-bottom: 20px; overflow-x: auto; border-radius: 6px; border: 1px solid #e2e8f0;">
+              <table style="width: 100%; border-collapse: collapse; font-family: ${fontFamily}; font-size: ${fontSize}pt; background-color: #ffffff;"><tbody>`;
+            element.rows.forEach((row, rowIdx) => {
+              const numRows = element.rows?.length || 0;
+              const borderBottom = rowIdx === numRows - 1 ? 'none' : '1px solid #e2e8f0';
+              const bg = row.cells[0]?.isHeader ? '#f1f5f9' : '#ffffff';
+              htmlContent += `<tr style="border-bottom: ${borderBottom}; background-color: ${bg};">`;
+              row.cells.forEach((cell, cellIdx) => {
+                const borderRight = cellIdx === row.cells.length - 1 ? 'none' : '1px solid #e2e8f0';
+                if (cell.isHeader) {
+                  htmlContent += `<th style="padding: 12px 16px; text-align: left; font-weight: 600; color: #0f172a; border-right: ${borderRight};">${escapeHtml(cell.content)}</th>`;
+                } else {
+                  htmlContent += `<td style="padding: 12px 16px; text-align: left; color: #1e293b; border-right: ${borderRight};">${escapeHtml(cell.content)}</td>`;
+                }
+              });
+              htmlContent += `</tr>`;
+            });
+            htmlContent += `</tbody></table></div>`;
+          }
+          break;
+      }
+    });
+
+    container.innerHTML = htmlContent;
+    document.body.appendChild(container);
+
+    // Wait for fonts/styles to apply
+    await new Promise(resolve => setTimeout(resolve, 100));
+
+    const canvas = await html2canvas(container, {
+      scale: 2, // High quality
+      useCORS: true,
+      logging: false,
+      backgroundColor: '#ffffff'
+    });
+
+    document.body.removeChild(container);
+
+    const imgData = canvas.toDataURL('image/jpeg', 1.0);
+    const pdf = new jsPDF({
+      orientation: 'portrait',
+      unit: 'mm',
+      format: 'a4',
+    });
+
+    const pdfWidth = pdf.internal.pageSize.getWidth();
+    const pdfHeight = pdf.internal.pageSize.getHeight();
+    const imgProps = pdf.getImageProperties(imgData);
+    const imgHeight = (imgProps.height * pdfWidth) / imgProps.width;
+
+    let heightLeft = imgHeight;
+    let position = 0;
+
+    // First page
+    pdf.addImage(imgData, 'JPEG', 0, position, pdfWidth, imgHeight);
+    heightLeft -= pdfHeight;
+
+    // Additional pages
+    while (heightLeft >= 0) {
+      position = heightLeft - imgHeight;
       pdf.addPage();
-      y = margin;
+      pdf.addImage(imgData, 'JPEG', 0, position, pdfWidth, imgHeight);
+      heightLeft -= pdfHeight;
     }
-  };
 
-  const setFont = (style: 'normal' | 'bold' | 'italic' = 'normal', size: number = fontSize) => {
-    pdf.setFontSize(size);
-    if (style === 'bold') {
-      pdf.setFont('helvetica', 'bold');
-    } else if (style === 'italic') {
-      pdf.setFont('helvetica', 'italic');
-    } else {
-      pdf.setFont('helvetica', 'normal');
-    }
-  };
-
-  for (const element of elements) {
-    switch (element.type) {
-      case 'heading1':
-        addNewPageIfNeeded(lineHeight * 2);
-        setFont('bold', fontSize + 6);
-        pdf.text(element.content, margin, y);
-        y += lineHeight * 2;
-        break;
-
-      case 'heading2':
-        addNewPageIfNeeded(lineHeight * 1.8);
-        setFont('bold', fontSize + 4);
-        pdf.text(element.content, margin, y);
-        y += lineHeight * 1.8;
-        break;
-
-      case 'heading3':
-        addNewPageIfNeeded(lineHeight * 1.5);
-        setFont('bold', fontSize + 2);
-        pdf.text(element.content, margin, y);
-        y += lineHeight * 1.5;
-        break;
-
-      case 'paragraph':
-        setFont('normal', fontSize);
-        const lines = pdf.splitTextToSize(element.content, contentWidth);
-        for (const line of lines) {
-          addNewPageIfNeeded(lineHeight);
-          pdf.text(line, margin, y);
-          y += lineHeight;
-        }
-        y += lineHeight * 0.5;
-        break;
-
-      case 'empty-line':
-        y += lineHeight;
-        break;
-
-      case 'bullet-list':
-        if (element.items) {
-          setFont('normal', fontSize);
-          for (const item of element.items) {
-            const bulletLines = pdf.splitTextToSize(`• ${item}`, contentWidth - 5);
-            for (let i = 0; i < bulletLines.length; i++) {
-              addNewPageIfNeeded(lineHeight);
-              pdf.text(bulletLines[i], margin + (i === 0 ? 0 : 5), y);
-              y += lineHeight;
-            }
-          }
-          y += lineHeight * 0.3;
-        }
-        break;
-
-      case 'numbered-list':
-        if (element.items) {
-          setFont('normal', fontSize);
-          for (let idx = 0; idx < element.items.length; idx++) {
-            const numLines = pdf.splitTextToSize(`${idx + 1}. ${element.items[idx]}`, contentWidth - 5);
-            for (let i = 0; i < numLines.length; i++) {
-              addNewPageIfNeeded(lineHeight);
-              pdf.text(numLines[i], margin + (i === 0 ? 0 : 5), y);
-              y += lineHeight;
-            }
-          }
-          y += lineHeight * 0.3;
-        }
-        break;
-
-      case 'code-block':
-        setFont('normal', fontSize - 1);
-        pdf.setFillColor(245, 245, 245);
-        const codeLines = element.content.split('\n');
-        const codeHeight = codeLines.length * lineHeight + 4;
-        addNewPageIfNeeded(codeHeight);
-        pdf.rect(margin, y - 3, contentWidth, codeHeight, 'F');
-        for (const codeLine of codeLines) {
-          pdf.text(codeLine, margin + 2, y);
-          y += lineHeight;
-        }
-        y += lineHeight * 0.5;
-        break;
-
-      case 'blockquote':
-        setFont('italic', fontSize);
-        pdf.setDrawColor(200);
-        const quoteLines = pdf.splitTextToSize(element.content, contentWidth - 10);
-        addNewPageIfNeeded(quoteLines.length * lineHeight + 4);
-        pdf.line(margin, y - 3, margin, y + quoteLines.length * lineHeight);
-        for (const quoteLine of quoteLines) {
-          pdf.text(quoteLine, margin + 5, y);
-          y += lineHeight;
-        }
-        y += lineHeight * 0.5;
-        break;
-
-      case 'table':
-        if (element.rows && element.rows.length > 0) {
-          setFont('normal', fontSize);
-          const numCols = element.rows[0].cells.length;
-          const colWidth = contentWidth / numCols;
-          const cellPadding = 2;
-          const cellHeight = lineHeight + 4;
-
-          for (const row of element.rows) {
-            addNewPageIfNeeded(cellHeight);
-            
-            for (let colIdx = 0; colIdx < row.cells.length; colIdx++) {
-              const cell = row.cells[colIdx];
-              const x = margin + colIdx * colWidth;
-              
-              // Draw cell background for headers
-              if (cell.isHeader) {
-                pdf.setFillColor(230, 230, 230);
-                pdf.rect(x, y - lineHeight, colWidth, cellHeight, 'F');
-                setFont('bold', fontSize);
-              } else {
-                setFont('normal', fontSize);
-              }
-              
-              // Draw cell border
-              pdf.setDrawColor(100);
-              pdf.rect(x, y - lineHeight, colWidth, cellHeight, 'S');
-              
-              // Draw cell text
-              const cellText = pdf.splitTextToSize(cell.content, colWidth - cellPadding * 2);
-              pdf.text(cellText[0] || '', x + cellPadding, y - 2);
-            }
-            y += cellHeight;
-          }
-          y += lineHeight * 0.5;
-        }
-        break;
-    }
+    pdf.save('aura-text-document.pdf');
+  } catch (error) {
+    console.error('Failed to generate PDF:', error);
+    alert('An error occurred while generating the PDF. Please try again.');
   }
-
-  pdf.save('aura-text-document.pdf');
 }
+

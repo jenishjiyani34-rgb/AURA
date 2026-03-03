@@ -1,4 +1,5 @@
 import { ParsedElement } from '../utils/textParser';
+import { FileSearch } from 'lucide-react';
 
 interface PreviewPanelProps {
   elements: ParsedElement[];
@@ -10,16 +11,14 @@ interface PreviewPanelProps {
 function PreviewPanel({ elements, fontSize, fontFamily, isConverted }: PreviewPanelProps) {
   if (!isConverted || elements.length === 0) {
     return (
-      <div className="h-[500px] flex items-center justify-center p-8">
-        <div className="text-center">
-          <div className="w-20 h-20 bg-gray-700/50 rounded-full flex items-center justify-center mx-auto mb-4">
-            <svg className="w-10 h-10 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-            </svg>
+      <div className="h-[500px] flex items-center justify-center p-8 bg-slate-900/30">
+        <div className="text-center flex flex-col items-center max-w-sm">
+          <div className="w-16 h-16 bg-slate-800/80 rounded-2xl flex items-center justify-center mb-6 shadow-inner border border-slate-700/50">
+            <FileSearch className="w-8 h-8 text-sky-400 opacity-80" />
           </div>
-          <h3 className="text-gray-400 font-medium mb-2">Document Preview</h3>
-          <p className="text-gray-500 text-sm max-w-xs">
-            Paste your AI text and enable real-time preview to see formatted output here.
+          <h3 className="text-slate-200 font-semibold mb-3 text-lg">Document Preview</h3>
+          <p className="text-slate-400 text-sm leading-relaxed">
+            Paste your AI-generated text and enable real-time preview to see your formatted, professional document output here.
           </p>
         </div>
       </div>
@@ -30,8 +29,8 @@ function PreviewPanel({ elements, fontSize, fontFamily, isConverted }: PreviewPa
     const baseStyle: React.CSSProperties = {
       fontFamily: fontFamily,
       fontSize: `${fontSize}pt`,
-      lineHeight: '1.5',
-      color: '#000000',
+      lineHeight: '1.6',
+      color: '#1e293b', // slate-800 instead of harsh black
     };
 
     switch (element.type) {
@@ -42,9 +41,12 @@ function PreviewPanel({ elements, fontSize, fontFamily, isConverted }: PreviewPa
             style={{ 
               ...baseStyle, 
               fontSize: `${fontSize + 8}pt`,
-              fontWeight: 'bold',
-              marginBottom: '12px',
-              marginTop: index === 0 ? '0' : '16px',
+              fontWeight: '700',
+              marginBottom: '16px',
+              marginTop: index === 0 ? '0' : '24px',
+              color: '#0f172a', // slate-900
+              borderBottom: '1px solid #e2e8f0',
+              paddingBottom: '8px',
             }}
           >
             {element.content}
@@ -58,9 +60,10 @@ function PreviewPanel({ elements, fontSize, fontFamily, isConverted }: PreviewPa
             style={{ 
               ...baseStyle, 
               fontSize: `${fontSize + 4}pt`,
-              fontWeight: 'bold',
-              marginBottom: '10px',
-              marginTop: index === 0 ? '0' : '14px',
+              fontWeight: '600',
+              marginBottom: '12px',
+              marginTop: index === 0 ? '0' : '20px',
+              color: '#0f172a',
             }}
           >
             {element.content}
@@ -74,9 +77,10 @@ function PreviewPanel({ elements, fontSize, fontFamily, isConverted }: PreviewPa
             style={{ 
               ...baseStyle, 
               fontSize: `${fontSize + 2}pt`,
-              fontWeight: 'bold',
-              marginBottom: '8px',
-              marginTop: index === 0 ? '0' : '12px',
+              fontWeight: '600',
+              marginBottom: '10px',
+              marginTop: index === 0 ? '0' : '16px',
+              color: '#334155', // slate-700
             }}
           >
             {element.content}
@@ -89,7 +93,7 @@ function PreviewPanel({ elements, fontSize, fontFamily, isConverted }: PreviewPa
             key={index}
             style={{
               ...baseStyle,
-              marginBottom: '4px',
+              marginBottom: '8px',
               whiteSpace: 'pre-wrap',
               wordWrap: 'break-word',
             }}
@@ -105,7 +109,7 @@ function PreviewPanel({ elements, fontSize, fontFamily, isConverted }: PreviewPa
             style={{ 
               ...baseStyle,
               height: `${fontSize}pt`,
-              minHeight: '12px',
+              minHeight: '16px',
             }} 
           >
             &nbsp;
@@ -118,18 +122,18 @@ function PreviewPanel({ elements, fontSize, fontFamily, isConverted }: PreviewPa
             key={index} 
             style={{ 
               ...baseStyle,
-              marginLeft: '20px',
-              marginBottom: '8px',
+              marginLeft: '24px',
+              marginBottom: '12px',
               listStyleType: 'disc',
-              paddingLeft: '10px',
             }}
           >
             {element.items?.map((item, idx) => (
               <li 
                 key={idx} 
                 style={{ 
-                  marginBottom: '4px',
-                  color: '#000000',
+                  marginBottom: '6px',
+                  color: '#1e293b',
+                  paddingLeft: '4px',
                 }}
               >
                 {item}
@@ -144,18 +148,18 @@ function PreviewPanel({ elements, fontSize, fontFamily, isConverted }: PreviewPa
             key={index} 
             style={{ 
               ...baseStyle,
-              marginLeft: '20px',
-              marginBottom: '8px',
+              marginLeft: '24px',
+              marginBottom: '12px',
               listStyleType: 'decimal',
-              paddingLeft: '10px',
             }}
           >
             {element.items?.map((item, idx) => (
               <li 
                 key={idx} 
                 style={{ 
-                  marginBottom: '4px',
-                  color: '#000000',
+                  marginBottom: '6px',
+                  color: '#1e293b',
+                  paddingLeft: '4px',
                 }}
               >
                 {item}
@@ -169,17 +173,17 @@ function PreviewPanel({ elements, fontSize, fontFamily, isConverted }: PreviewPa
           <pre
             key={index}
             style={{
-              fontFamily: 'Courier New, monospace',
+              fontFamily: '"Fira Code", "Courier New", monospace',
               fontSize: `${fontSize - 1}pt`,
-              backgroundColor: '#f5f5f5',
-              border: '1px solid #ddd',
-              borderRadius: '4px',
-              padding: '12px',
-              marginBottom: '8px',
+              backgroundColor: '#f8fafc', // slate-50
+              border: '1px solid #e2e8f0', // slate-200
+              borderRadius: '6px',
+              padding: '16px',
+              marginBottom: '12px',
               overflowX: 'auto',
               whiteSpace: 'pre-wrap',
               wordWrap: 'break-word',
-              color: '#333333',
+              color: '#334155', // slate-700
             }}
           >
             <code>{element.content}</code>
@@ -192,15 +196,14 @@ function PreviewPanel({ elements, fontSize, fontFamily, isConverted }: PreviewPa
             key={index}
             style={{
               ...baseStyle,
-              borderLeft: '4px solid #ccc',
-              paddingLeft: '16px',
+              borderLeft: '4px solid #94a3b8', // slate-400
               marginLeft: '0',
-              marginBottom: '8px',
-              backgroundColor: '#fafafa',
-              padding: '12px 12px 12px 20px',
-              borderRadius: '0 4px 4px 0',
+              marginBottom: '12px',
+              backgroundColor: '#f8fafc', // slate-50
+              padding: '12px 16px',
+              borderRadius: '0 6px 6px 0',
               fontStyle: 'italic',
-              color: '#555555',
+              color: '#475569', // slate-600
             }}
           >
             {element.content}
@@ -210,13 +213,14 @@ function PreviewPanel({ elements, fontSize, fontFamily, isConverted }: PreviewPa
       case 'table':
         if (!element.rows || element.rows.length === 0) return null;
         return (
-          <div key={index} style={{ marginBottom: '16px', overflowX: 'auto' }}>
+          <div key={index} style={{ marginBottom: '20px', overflowX: 'auto', borderRadius: '6px', border: '1px solid #e2e8f0' }}>
             <table
               style={{
                 width: '100%',
                 borderCollapse: 'collapse',
                 fontFamily: fontFamily,
                 fontSize: `${fontSize}pt`,
+                backgroundColor: '#ffffff',
               }}
             >
               <tbody>
@@ -224,7 +228,8 @@ function PreviewPanel({ elements, fontSize, fontFamily, isConverted }: PreviewPa
                   <tr 
                     key={rowIdx}
                     style={{
-                      backgroundColor: row.cells[0]?.isHeader ? '#f0f0f0' : '#ffffff',
+                      borderBottom: rowIdx === (element.rows?.length ?? 0) - 1 ? 'none' : '1px solid #e2e8f0',
+                      backgroundColor: row.cells[0]?.isHeader ? '#f1f5f9' : '#ffffff', // slate-100 for header
                     }}
                   >
                     {row.cells.map((cell, cellIdx) => (
@@ -232,12 +237,11 @@ function PreviewPanel({ elements, fontSize, fontFamily, isConverted }: PreviewPa
                         <th
                           key={cellIdx}
                           style={{
-                            border: '1px solid #333333',
-                            padding: '8px 12px',
+                            padding: '12px 16px',
                             textAlign: 'left',
-                            fontWeight: 'bold',
-                            backgroundColor: '#e8e8e8',
-                            color: '#000000',
+                            fontWeight: '600',
+                            color: '#0f172a',
+                            borderRight: cellIdx === row.cells.length - 1 ? 'none' : '1px solid #e2e8f0',
                           }}
                         >
                           {cell.content}
@@ -246,10 +250,10 @@ function PreviewPanel({ elements, fontSize, fontFamily, isConverted }: PreviewPa
                         <td
                           key={cellIdx}
                           style={{
-                            border: '1px solid #333333',
-                            padding: '8px 12px',
+                            padding: '12px 16px',
                             textAlign: 'left',
-                            color: '#000000',
+                            color: '#1e293b',
+                            borderRight: cellIdx === row.cells.length - 1 ? 'none' : '1px solid #e2e8f0',
                           }}
                         >
                           {cell.content}
@@ -270,16 +274,17 @@ function PreviewPanel({ elements, fontSize, fontFamily, isConverted }: PreviewPa
 
   return (
     <div 
-      className="h-[600px] overflow-y-auto bg-gray-700"
-      style={{ padding: '8px' }}
+      className="h-[600px] overflow-y-auto bg-slate-900/50 p-4 sm:p-8"
     >
       {/* Document paper simulation */}
       <div 
+        className="mx-auto max-w-[850px] transition-all duration-300"
         style={{
           backgroundColor: '#ffffff',
           minHeight: '100%',
-          padding: '40px 50px',
-          boxShadow: '0 4px 20px rgba(0,0,0,0.3)',
+          padding: '48px 64px',
+          boxShadow: '0 10px 40px -10px rgba(0,0,0,0.5)',
+          borderRadius: '4px',
           fontFamily: fontFamily,
         }}
       >

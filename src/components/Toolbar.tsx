@@ -1,3 +1,13 @@
+import { 
+  Sparkles, 
+  Trash2, 
+  FileText, 
+  FileDown, 
+  Languages, 
+  Type,
+  Maximize2
+} from 'lucide-react';
+
 interface ToolbarProps {
   fontSize: number;
   setFontSize: (size: number) => void;
@@ -20,21 +30,9 @@ interface ToolbarProps {
 }
 
 const fontFamilies = [
-  'Times New Roman',
-  'Arial',
-  'Georgia',
-  'Verdana',
-  'Calibri',
-  'Cambria',
-  'Garamond',
-  'Merriweather',
-  'Playfair Display',
-  'Lora',
-  'Poppins',
-  'Montserrat',
-  'Nunito',
-  'Source Sans 3',
-  'IBM Plex Serif',
+  'Times New Roman', 'Arial', 'Georgia', 'Verdana', 'Calibri', 'Cambria',
+  'Garamond', 'Merriweather', 'Playfair Display', 'Lora', 'Poppins',
+  'Montserrat', 'Nunito', 'Source Sans 3', 'IBM Plex Serif',
 ];
 
 const fontSizes = [10, 11, 12, 14, 16, 18, 20, 24];
@@ -78,34 +76,37 @@ function Toolbar({
   isProcessing,
 }: ToolbarProps) {
   return (
-    <div className="bg-gray-800/70 backdrop-blur-sm rounded-xl border border-gray-700 p-4">
-      <div className="flex flex-wrap items-center gap-4">
-        {/* Font Controls */}
-        <div className="flex items-center gap-3 flex-wrap">
-          <div className="flex items-center gap-2">
-            <label className="text-gray-400 text-sm">Font:</label>
+    <div className="glass-panel rounded-2xl p-5 w-full flex flex-col gap-5">
+      
+      {/* Top Row: Core Tools & Actions */}
+      <div className="flex flex-col lg:flex-row items-center gap-4 justify-between w-full">
+        
+        {/* Left: Typography & View */}
+        <div className="flex flex-wrap items-center gap-3 w-full lg:w-auto">
+          <div className="flex items-center gap-2 bg-slate-900/50 p-1.5 rounded-xl border border-slate-700">
+            <Type className="w-4 h-4 text-slate-400 ml-2" />
             <select
               value={fontFamily}
               onChange={(e) => setFontFamily(e.target.value)}
-              className="bg-gray-700 text-white border border-gray-600 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-yellow-500"
+              className="bg-transparent text-slate-200 border-none rounded-lg py-1.5 px-2 text-sm focus:ring-2 focus:ring-sky-500/50 outline-none w-36 sm:w-44 appearance-none cursor-pointer"
             >
               {fontFamilies.map((font) => (
-                <option key={font} value={font}>
+                <option key={font} value={font} className="bg-slate-800 text-slate-200">
                   {font}
                 </option>
               ))}
             </select>
           </div>
           
-          <div className="flex items-center gap-2">
-            <label className="text-gray-400 text-sm">Size:</label>
+          <div className="flex items-center gap-2 bg-slate-900/50 p-1.5 rounded-xl border border-slate-700">
+            <Maximize2 className="w-4 h-4 text-slate-400 ml-2" />
             <select
               value={fontSize}
               onChange={(e) => setFontSize(Number(e.target.value))}
-              className="bg-gray-700 text-white border border-gray-600 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-yellow-500"
+              className="bg-transparent text-slate-200 border-none rounded-lg py-1.5 px-2 pr-6 text-sm focus:ring-2 focus:ring-sky-500/50 outline-none appearance-none cursor-pointer"
             >
               {fontSizes.map((size) => (
-                <option key={size} value={size}>
+                <option key={size} value={size} className="bg-slate-800 text-slate-200">
                   {size}pt
                 </option>
               ))}
@@ -113,160 +114,116 @@ function Toolbar({
           </div>
         </div>
 
-        {/* Divider */}
-        <div className="h-8 w-px bg-gray-600 hidden md:block" />
-
-        {/* Action Buttons */}
-        <div className="flex items-center gap-3 flex-wrap">
+        {/* Center: Main Action (Convert & Clear) */}
+        <div className="flex items-center gap-3 w-full lg:w-auto justify-center">
           <button
             onClick={onConvert}
             disabled={isProcessing}
-            className="bg-gradient-to-r from-yellow-500 to-yellow-600 hover:from-yellow-400 hover:to-yellow-500 text-black font-semibold px-6 py-2 rounded-lg transition-all duration-200 flex items-center gap-2 shadow-lg shadow-yellow-500/25 disabled:opacity-50 disabled:cursor-not-allowed"
+            className="group relative flex items-center gap-2 bg-sky-500 hover:bg-sky-400 text-slate-900 font-semibold px-6 py-2.5 rounded-xl transition-all duration-300 shadow-[0_0_20px_rgba(14,165,233,0.3)] disabled:opacity-50 disabled:cursor-not-allowed overflow-hidden"
           >
+            <div className="absolute inset-0 bg-white/20 translate-y-full group-hover:translate-y-0 transition-transform duration-300 ease-out" />
             {isProcessing ? (
               <>
-                <svg className="animate-spin w-5 h-5" fill="none" viewBox="0 0 24 24">
-                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
-                  <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
-                </svg>
-                Processing...
+                <div className="w-4 h-4 border-2 border-slate-900/30 border-t-slate-900 rounded-full animate-spin" />
+                <span className="relative z-10">Processing...</span>
               </>
             ) : (
               <>
-                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
-                </svg>
-                Convert
+                <Sparkles className="w-4 h-4 relative z-10" />
+                <span className="relative z-10">Convert Notes</span>
               </>
             )}
           </button>
 
           <button
             onClick={onClear}
-            className="bg-gray-700 hover:bg-gray-600 text-white font-medium px-4 py-2 rounded-lg transition-all duration-200 flex items-center gap-2 border border-gray-600"
+            className="flex items-center gap-2 bg-slate-800 hover:bg-slate-700 text-slate-300 px-4 py-2.5 rounded-xl transition-colors border border-slate-700/50 font-medium"
           >
-            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-            </svg>
-            Clear
+            <Trash2 className="w-4 h-4" />
+            <span className="hidden sm:inline">Clear</span>
           </button>
         </div>
 
-        {/* Divider */}
-        <div className="h-8 w-px bg-gray-600 hidden md:block" />
-
-        {/* Options */}
-        <div className="flex items-center gap-3 flex-wrap">
-          {/* Option A - Remove AI Marks */}
-          <label className="flex items-center gap-2 bg-yellow-500/10 border-2 border-yellow-500/50 rounded-lg px-3 py-2 cursor-pointer select-none hover:bg-yellow-500/20 transition-colors">
-            <input
-              type="checkbox"
-              checked={removeAiMarks}
-              onChange={(e) => setRemoveAiMarks(e.target.checked)}
-              className="h-4 w-4 accent-yellow-500"
-            />
-            <span className="text-sm font-semibold text-yellow-400">
-              Option A: Remove AI Marks (Always On)
-            </span>
-            <span className="w-2 h-2 bg-green-500 rounded-full"></span>
-          </label>
-
-          {/* Real-time Preview Toggle */}
-          <label className="flex items-center gap-2 bg-blue-500/10 border-2 border-blue-500/50 rounded-lg px-3 py-2 cursor-pointer select-none hover:bg-blue-500/20 transition-colors">
-            <input
-              type="checkbox"
-              checked={realtimePreview}
-              onChange={(e) => setRealtimePreview(e.target.checked)}
-              className="h-4 w-4 accent-blue-500"
-            />
-            <span className="text-sm font-semibold text-blue-400">
-              Real-Time Preview
-            </span>
-            {realtimePreview && (
-              <span className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></span>
-            )}
-          </label>
-        </div>
-
-        {/* Divider */}
-        <div className="h-8 w-px bg-gray-600 hidden md:block" />
-
-        {/* Download Buttons */}
-        <div className="flex items-center gap-3 flex-wrap">
+        {/* Right: Export Options */}
+        <div className="flex items-center gap-3 w-full lg:w-auto justify-end">
           <button
             onClick={onDownloadWord}
             disabled={!isConverted}
-            className="bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-500 hover:to-blue-600 text-white font-medium px-4 py-2 rounded-lg transition-all duration-200 flex items-center gap-2 disabled:opacity-40 disabled:cursor-not-allowed shadow-lg shadow-blue-500/25"
+            className="flex items-center gap-2 bg-blue-600/20 hover:bg-blue-600/30 text-blue-400 border border-blue-500/30 px-4 py-2.5 rounded-xl transition-all duration-200 disabled:opacity-30 disabled:cursor-not-allowed font-medium"
           >
-            <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
-              <path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8l-6-6zm-1 2l5 5h-5V4zM6 20V4h6v6h6v10H6z"/>
-              <path d="M8 12h8v2H8v-2zm0 4h8v2H8v-2z"/>
-            </svg>
-            Download Word
+            <FileText className="w-4 h-4" />
+            <span className="hidden sm:inline">Word</span>
           </button>
-
+          
           <button
             onClick={onDownloadPDF}
             disabled={!isConverted}
-            className="bg-gradient-to-r from-red-600 to-red-700 hover:from-red-500 hover:to-red-600 text-white font-medium px-4 py-2 rounded-lg transition-all duration-200 flex items-center gap-2 disabled:opacity-40 disabled:cursor-not-allowed shadow-lg shadow-red-500/25"
+            className="flex items-center gap-2 bg-rose-600/20 hover:bg-rose-600/30 text-rose-400 border border-rose-500/30 px-4 py-2.5 rounded-xl transition-all duration-200 disabled:opacity-30 disabled:cursor-not-allowed font-medium"
           >
-            <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
-              <path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8l-6-6zm-1 2l5 5h-5V4zM6 20V4h6v6h6v10H6z"/>
-              <path d="M9 13h2v5H9v-5zm4 0h2v5h-2v-5z"/>
-            </svg>
-            Download PDF
-          </button>
-        </div>
-
-        {/* Divider */}
-        <div className="h-8 w-px bg-gray-600 hidden md:block" />
-
-        {/* Translation */}
-        <div className="flex items-center gap-2 flex-wrap">
-          <label className="text-gray-400 text-sm">Translate to:</label>
-          <select
-            value={targetLanguage}
-            onChange={(e) => setTargetLanguage(e.target.value)}
-            className="bg-gray-700 text-white border border-gray-600 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-cyan-400"
-          >
-            {languageOptions.map((language) => (
-              <option key={language.code} value={language.code}>
-                {language.label}
-              </option>
-            ))}
-          </select>
-          <button
-            onClick={onTranslate}
-            disabled={isTranslating}
-            className="bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-white font-medium px-4 py-2 rounded-lg transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
-          >
-            {isTranslating ? 'Translating...' : 'Translate'}
+            <FileDown className="w-4 h-4" />
+            <span className="hidden sm:inline">PDF</span>
           </button>
         </div>
       </div>
 
-      {/* Feature Tags */}
-      <div className="flex flex-wrap gap-2 mt-4 pt-4 border-t border-gray-700">
-        <span className="bg-yellow-500/20 text-yellow-400 px-3 py-1 rounded-full text-xs font-medium flex items-center gap-1">
-          {removeAiMarks && <span className="w-2 h-2 bg-yellow-500 rounded-full"></span>}
-          AI Marks Removal
-        </span>
-        <span className="bg-blue-500/20 text-blue-400 px-3 py-1 rounded-full text-xs font-medium flex items-center gap-1">
-          {realtimePreview && <span className="w-2 h-2 bg-blue-500 rounded-full animate-pulse"></span>}
-          Real-Time Preview
-        </span>
-        <span className="bg-cyan-500/20 text-cyan-300 px-3 py-1 rounded-full text-xs font-medium">
-          Auto Table Detection
-        </span>
-        <span className="bg-green-500/20 text-green-400 px-3 py-1 rounded-full text-xs font-medium">
-          No Word Limit
-        </span>
-        <span className="bg-purple-500/20 text-purple-400 px-3 py-1 rounded-full text-xs font-medium">
-          Format Preservation
-        </span>
-        <span className="bg-red-500/20 text-red-400 px-3 py-1 rounded-full text-xs font-medium">
-          Word & PDF Export
-        </span>
+      <div className="h-px w-full bg-gradient-to-r from-transparent via-slate-700 to-transparent opacity-50" />
+
+      {/* Bottom Row: Settings & Translation */}
+      <div className="flex flex-col lg:flex-row items-center justify-between gap-4">
+        
+        {/* Settings Toggles */}
+        <div className="flex flex-wrap items-center gap-3">
+          <label className={`flex items-center gap-2.5 px-4 py-2 rounded-xl border transition-all cursor-pointer select-none ${removeAiMarks ? 'bg-amber-500/10 border-amber-500/30 text-amber-400' : 'bg-slate-800/50 border-slate-700 text-slate-400'}`}>
+            <div className={`w-4 h-4 rounded shadow-sm border flex items-center justify-center transition-colors ${removeAiMarks ? 'bg-amber-500 border-amber-400' : 'bg-slate-900 border-slate-600'}`}>
+              {removeAiMarks && <Sparkles className="w-3 h-3 text-slate-900" />}
+            </div>
+            <input
+              type="checkbox"
+              className="hidden"
+              checked={removeAiMarks}
+              onChange={(e) => setRemoveAiMarks(e.target.checked)}
+            />
+            <span className="text-sm font-medium">Auto-Clean AI Marks</span>
+          </label>
+
+          <label className={`flex items-center gap-2.5 px-4 py-2 rounded-xl border transition-all cursor-pointer select-none ${realtimePreview ? 'bg-emerald-500/10 border-emerald-500/30 text-emerald-400' : 'bg-slate-800/50 border-slate-700 text-slate-400'}`}>
+            <div className={`relative w-8 h-4 rounded-full transition-colors ${realtimePreview ? 'bg-emerald-500/30' : 'bg-slate-700'}`}>
+              <div className={`absolute top-0.5 left-0.5 w-3 h-3 rounded-full transition-transform ${realtimePreview ? 'translate-x-4 bg-emerald-400 shadow-[0_0_10px_rgba(52,211,153,0.8)]' : 'bg-slate-400'}`} />
+            </div>
+            <input
+              type="checkbox"
+              className="hidden"
+              checked={realtimePreview}
+              onChange={(e) => setRealtimePreview(e.target.checked)}
+            />
+            <span className="text-sm font-medium">Live Preview</span>
+          </label>
+        </div>
+
+        {/* Translation Studio */}
+        <div className="flex items-center gap-2 bg-slate-800/50 p-1.5 rounded-xl border border-slate-700">
+          <Languages className="w-4 h-4 text-purple-400 ml-2" />
+          <select
+            value={targetLanguage}
+            onChange={(e) => setTargetLanguage(e.target.value)}
+            className="bg-transparent text-slate-200 border-none py-1.5 px-2 text-sm focus:outline-none w-32 cursor-pointer appearance-none"
+          >
+            {languageOptions.map((lang) => (
+              <option key={lang.code} value={lang.code} className="bg-slate-800 text-slate-200">
+                {lang.label}
+              </option>
+            ))}
+          </select>
+          <div className="w-px h-6 bg-slate-700 mx-1" />
+          <button
+            onClick={onTranslate}
+            disabled={isTranslating}
+            className="bg-purple-600 hover:bg-purple-500 text-white text-sm font-medium px-4 py-1.5 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            {isTranslating ? 'Translating...' : 'Translate'}
+          </button>
+        </div>
+
       </div>
     </div>
   );

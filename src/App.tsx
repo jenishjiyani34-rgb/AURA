@@ -3,6 +3,19 @@ import { parseTextToElements, ParsedElement, convertTableForTranslation, convert
 import { generateWordDocument, generatePDF } from './utils/documentGenerator';
 import PreviewPanel from './components/PreviewPanel';
 import Toolbar from './components/Toolbar';
+import { 
+  Sparkles, 
+  Wand2, 
+  FileText, 
+  Table, 
+  Infinity as InfinityIcon, 
+  Languages, 
+  Download,
+  CheckCircle2,
+  AlertCircle,
+  Copy,
+  ScanLine
+} from 'lucide-react';
 
 function App() {
   const [inputText, setInputText] = useState('');
@@ -154,9 +167,9 @@ function App() {
     await generateWordDocument(parsedElements, fontSize, fontFamily);
   };
 
-  const handleDownloadPDF = () => {
+  const handleDownloadPDF = async () => {
     if (parsedElements.length === 0) return;
-    generatePDF(parsedElements, fontSize, fontFamily);
+    await generatePDF(parsedElements, fontSize, fontFamily);
   };
 
   const handleDownloadTranslatedWord = async () => {
@@ -168,13 +181,13 @@ function App() {
     await generateWordDocument(translatedElements, fontSize, fontFamily);
   };
 
-  const handleDownloadTranslatedPDF = () => {
+  const handleDownloadTranslatedPDF = async () => {
     if (!translatedText.trim()) return;
     const translatedElements = parseTextToElements(translatedText, {
       removeAiMarks: true,
       autoCorrect: false,
     });
-    generatePDF(translatedElements, fontSize, fontFamily);
+    await generatePDF(translatedElements, fontSize, fontFamily);
   };
 
   const handlePaste = (e: React.ClipboardEvent) => {
@@ -537,8 +550,17 @@ The converter will automatically detect:
               </p>
             </div>
 
-    
-           
+            {/* Website URL */}
+            <div className="mt-2">
+              <a 
+                href="https://auratext.in" 
+                target="_blank" 
+                rel="noopener noreferrer"
+                className="text-blue-400 hover:text-blue-300 text-sm underline"
+              >
+                www.auratext.in
+              </a>
+            </div>
           </div>
         </div>
       </footer>
