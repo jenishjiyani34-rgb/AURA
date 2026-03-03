@@ -1,0 +1,10 @@
+{
+  "name": "AURA TEXT",
+  "short_name": "AURA TEXT",
+  "description": "Convert AI text into professional Word and PDF documents with table detection and translation.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#0b1220",
+  "theme_color": "#0b1220",
+  "lang": "en-IN"
+}
